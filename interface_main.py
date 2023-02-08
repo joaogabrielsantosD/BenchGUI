@@ -7,9 +7,6 @@ from PyQt5.QtWidgets import QFileDialog
 
 class Ui_MainWindow(object):
 
-    def __init__(self):
-        self.ui = None
-
     def open_brake_window(self):
         #Open a brake window
         self.ui=Ui_Brake_Window()
