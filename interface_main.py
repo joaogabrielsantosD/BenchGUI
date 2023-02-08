@@ -1,15 +1,17 @@
-from PyQt5.QtWidgets import QApplication,QAction,QFileDialog
-from PyQt5 import QtCore, QtGui, QtWidgets
+import sys
 import pandas as pd
 import pyqtgraph as pg
-import sys 
+from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtWidgets import QFileDialog
 
 
 class Ui_MainWindow(object):
 
+    def __init__(self):
+        self.ui = None
+
     def open_brake_window(self):
-    #Open a brake window
-        self.window=QtWidgets.QMainWindow()
+        #Open a brake window
         self.ui=Ui_Brake_Window()
         self.ui.setupUi(self.window)
         self.window.show()
