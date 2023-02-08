@@ -78,7 +78,6 @@ class Ui_MainWindow(object):
         self.Freio_buton.setText(_translate("MainWindow", "Freio"))
         self.Motor_button.setText(_translate("MainWindow", "Motor"))
 
-
 class Ui_Brake_Window(object):
 
 
@@ -108,6 +107,7 @@ class Ui_Brake_Window(object):
         self.tabWidget.setUsesScrollButtons(True)
         self.tabWidget.setDocumentMode(True)
         self.tabWidget.setTabsClosable(False)
+        self.tabWidget.setMovable(False)
         self.tabWidget.setTabBarAutoHide(False)
         self.tabWidget.setObjectName("tabWidget")
 
@@ -215,7 +215,7 @@ class Ui_Motor_Window(object):
         self.tabWidget.setUsesScrollButtons(True)
         self.tabWidget.setDocumentMode(True)
         self.tabWidget.setTabsClosable(False)
-        self.tabWidget.setMovable(True)
+        self.tabWidget.setMovable(False)
         self.tabWidget.setTabBarAutoHide(False)
         self.tabWidget.setObjectName("tabWidget")
 
