@@ -300,7 +300,6 @@ class Ui_Motor_Window(object):
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.Pre_Temp),
                                   _translate("Motor_Window", "Pressão/Temperatura"))
 
-
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
