@@ -1,4 +1,5 @@
 import sys
+import csv
 import pandas as pd
 import pyqtgraph as pg
 from PyQt5 import QtCore, QtGui, QtWidgets
@@ -9,6 +10,7 @@ class Ui_MainWindow(object):
 
     def open_brake_window(self):
         # Open a brake window
+        self.window = QtWidgets.QMainWindow()
         self.ui = Ui_Brake_Window()
         self.ui.setupUi(self.window)
         self.window.show()
@@ -22,35 +24,39 @@ class Ui_MainWindow(object):
 
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(334, 274)
+        MainWindow.resize(350, 300)
         MainWindow.setStyleSheet("")
 
+        #Define the icon of the window
         icon = QtGui.QIcon("icon.jpg")
         MainWindow.setWindowIcon(icon)
 
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.Text = QtWidgets.QLabel(self.centralwidget)
-        self.Text.setGeometry(QtCore.QRect(60, 10, 221, 20))
+        self.Text.setGeometry(QtCore.QRect(50,10,300,50))
         font = QtGui.QFont()
         font.setPointSize(20)
         self.Text.setFont(font)
         self.Text.setObjectName("Text")
 
-        self.Freio_buton = QtWidgets.QPushButton(self.centralwidget, clicked=lambda: self.open_brake_window())
-        self.Freio_buton.setEnabled(True)
-        self.Freio_buton.setGeometry(QtCore.QRect(70, 60, 191, 81))
+        #Brake button, open the brake window
+        self.Freio_button = QtWidgets.QPushButton(self.centralwidget)
+        self.Freio_button.setEnabled(True)
+        self.Freio_button.setGeometry(QtCore.QRect(70,80,191,81))
         font = QtGui.QFont()
         font.setPointSize(22)
         font.setItalic(True)
-        self.Freio_buton.setFont(font)
-        self.Freio_buton.setStyleSheet(
+        self.Freio_button.setFont(font)
+        self.Freio_button.setStyleSheet(
             "background-color: qlineargradient(spread:reflect, x1:0, y1:0, x2:1, y2:1, stop:1 rgba(8, 115, 0, 255));\n"
             "color: rgb(255, 255, 255);\n")
-        self.Freio_buton.setObjectName("Freio_buton")
+        self.Freio_button.setObjectName("Freio_buton")
+        self.Freio_button.clicked.connect(self.open_brake_window)
 
-        self.Motor_button = QtWidgets.QPushButton(self.centralwidget, clicked=lambda: self.open_motor_window())
-        self.Motor_button.setGeometry(QtCore.QRect(69, 157, 191, 81))
+        #Motor button, open the motor window
+        self.Motor_button = QtWidgets.QPushButton(self.centralwidget)
+        self.Motor_button.setGeometry(QtCore.QRect(70,177,191,81))
         font = QtGui.QFont()
         font.setPointSize(22)
         font.setItalic(True)
@@ -59,9 +65,11 @@ class Ui_MainWindow(object):
             "background-color: qlineargradient(spread:reflect, x1:0, y1:0, x2:1, y2:1, stop:1 rgba(8, 115, 0, 255));\n"
             "color: rgb(255, 255, 255);\n")
         self.Motor_button.setObjectName("Motor_button")
+        self.Motor_button.clicked.connect(self.open_motor_window)
 
+        #Symbol/image settings
         self.photo = QtWidgets.QLabel(self.centralwidget)
-        self.photo.setGeometry(QtCore.QRect(270, 40, 58, 51))
+        self.photo.setGeometry(QtCore.QRect(270, 100, 58, 51))
         self.photo.setText("")
         self.photo.setPixmap(QtGui.QPixmap("logo.png"))
         self.photo.setObjectName("photo")
@@ -78,13 +86,14 @@ class Ui_MainWindow(object):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
         self.Text.setText(_translate("MainWindow", "Escolha a Bancada"))
-        self.Freio_buton.setText(_translate("MainWindow", "Freio"))
+        self.Freio_button.setText(_translate("MainWindow", "Freio"))
         self.Motor_button.setText(_translate("MainWindow", "Motor"))
 
 
 class Ui_Brake_Window(object):
 
     def setupUi(self, Brake_Window):
+
         Brake_Window.setObjectName("Brake_Window")
         Brake_Window.resize(611, 589)
 
@@ -112,7 +121,7 @@ class Ui_Brake_Window(object):
         self.tabWidget.setUsesScrollButtons(True)
         self.tabWidget.setDocumentMode(True)
         self.tabWidget.setTabsClosable(False)
-        self.tabWidget.setMovable(False)
+        self.tabWidget.setMovable(True)
         self.tabWidget.setTabBarAutoHide(False)
         self.tabWidget.setObjectName("tabWidget")
 
@@ -144,7 +153,7 @@ class Ui_Brake_Window(object):
         self.tabWidget.raise_()
         self.Select_button.raise_()
         Brake_Window.setCentralWidget(self.centralwidget)
-        self.statusbar = QtWidgets.QStatusBar(Brake_Window)
+        self.statusbar = QtWidgets.QStatusBar(Brake_Window) 
         self.statusbar.setCursor(QtGui.QCursor(QtCore.Qt.ArrowCursor))
         self.statusbar.setMouseTracking(False)
         self.statusbar.setObjectName("statusbar")
@@ -198,6 +207,7 @@ class Ui_Motor_Window(object):
         Motor_Window.setObjectName("Motor_Window")
         Motor_Window.resize(611, 589)
 
+        #Define the icon of the window
         m_icon = QtGui.QIcon("m_icon.png")
         Motor_Window.setWindowIcon(m_icon)
 
@@ -211,6 +221,7 @@ class Ui_Motor_Window(object):
         self.verticalLayout.setContentsMargins(0, 0, 0, 0)
         self.verticalLayout.setObjectName("verticalLayout")
 
+        #Select button, to open an select your csv file
         self.Select_button = QtWidgets.QPushButton(self.layoutWidget, clicked=lambda: self.Open_sheet_Motor())
         self.Select_button.setStyleSheet("border-radius=5px;\n"
                                          "")
@@ -222,33 +233,54 @@ class Ui_Motor_Window(object):
         self.tabWidget.setUsesScrollButtons(True)
         self.tabWidget.setDocumentMode(True)
         self.tabWidget.setTabsClosable(False)
-        self.tabWidget.setMovable(False)
+        self.tabWidget.setMovable(True)
         self.tabWidget.setTabBarAutoHide(False)
         self.tabWidget.setObjectName("tabWidget")
 
-        self.Tor_Pot = QtWidgets.QWidget()
-        self.Tor_Pot.setObjectName("Tor_Pot")
-        self.graph_Tor_Pot = pg.PlotWidget(self.Tor_Pot)
-        self.graph_Tor_Pot.setBackground('w')
-        self.graph_Tor_Pot.showGrid(x=True, y=True)
-        self.graph_Tor_Pot.setGeometry(QtCore.QRect(50, 50, 500, 400))
-        self.tabWidget.addTab(self.Tor_Pot, "")
+        #graphs to torque and potency
+        self.torque = []
+        self.potency = []
+        self.pot_ = []
+        self.pressure = []
+        self.temperature = []
+        self.temp_ = []
 
-        self.Tem_Pot = QtWidgets.QWidget()
-        self.Tem_Pot.setObjectName("Tem_Pot")
-        self.graph_Tem_Pot = pg.PlotWidget(self.Tem_Pot)
-        self.graph_Tem_Pot.setBackground('w')
-        self.graph_Tem_Pot.showGrid(x=True, y=True)
-        self.graph_Tem_Pot.setGeometry(QtCore.QRect(50, 50, 500, 400))
-        self.tabWidget.addTab(self.Tem_Pot, "")
+        self.Torque_Potency = QtWidgets.QWidget()
+        self.Torque_Potency.setObjectName("Tor_Pot")
 
-        self.Pre_Temp = QtWidgets.QWidget()
-        self.Pre_Temp.setObjectName("Pre_Temp")
-        self.graph_Pre_Temp = pg.PlotWidget(self.Pre_Temp)
-        self.graph_Pre_Temp.setBackground('w')
-        self.graph_Pre_Temp.showGrid(x=True, y=True)
-        self.graph_Pre_Temp.setGeometry(QtCore.QRect(50, 50, 500, 400))
-        self.tabWidget.addTab(self.Pre_Temp, "")
+        self.graph_Torque_Potency = pg.PlotWidget(self.Torque_Potency)
+        self.graph_Torque_Potency.setBackground('w')
+        self.graph_Torque_Potency.showGrid(x=True, y=True)
+        self.graph_Torque_Potency.setGeometry(QtCore.QRect(50, 50, 500, 400))
+        self.graph_Torque_Potency.setLabel('left', 'Torque')
+        self.graph_Torque_Potency.setLabel('bottom', 'Potência')
+        self.tabWidget.addTab(self.Torque_Potency, "")
+
+        #graphs to temperature and potency
+        self.Temperature_Potency = QtWidgets.QWidget()
+        self.Temperature_Potency.setObjectName("Tem_Pot")
+
+        self.graph_Temperature_Potency = pg.PlotWidget(self.Temperature_Potency)
+        self.graph_Temperature_Potency.setBackground('w')
+        self.graph_Temperature_Potency.showGrid(x=True, y=True)
+        self.graph_Temperature_Potency.setGeometry(QtCore.QRect(50, 50, 500, 400))
+        self.graph_Temperature_Potency.setLabel('left', 'Temperatura')
+        self.graph_Temperature_Potency.setLabel('bottom', 'Potência')
+        self.tabWidget.addTab(self.Temperature_Potency, "")
+
+        #graphs to pressure and temperature
+        self.Pressure_Temperature = QtWidgets.QWidget()
+        self.Pressure_Temperature.setObjectName("Pre_Temp")
+
+        self.graph_Pressure_Temperature = pg.PlotWidget(self.Pressure_Temperature)
+        self.graph_Pressure_Temperature.setBackground('w')
+        self.graph_Pressure_Temperature.showGrid(x=True, y=True)
+        self.graph_Pressure_Temperature.setGeometry(QtCore.QRect(50, 50, 500, 400))
+        self.graph_Pressure_Temperature.setLabel('left', 'Pressão')
+        self.graph_Pressure_Temperature.setLabel('bottom', 'Temperatura')
+        self.tabWidget.addTab(self.Pressure_Temperature, "")
+
+        self.plot_graph_Motor()
 
         self.verticalLayout.addWidget(self.tabWidget)
         self.tabWidget.raise_()
@@ -266,38 +298,53 @@ class Ui_Motor_Window(object):
 
     def Open_sheet_Motor(self):
         # Open directory to read csv files
-        filename = QFileDialog.getOpenFileName(None, ("Open FIle"), "", ("Csv Files (*.csv);;Txt FIles (*.txt)"))[0]
+        file_path, _ = QFileDialog.getOpenFileName(None, 'Open FIle', '', 'Csv Files (*.csv)')
 
-        if filename != '':
-            self.all_data = pd.read_csv(filename[0])
-            self.pot_tab = self.all_data.set_index('f1')
-            self.temp_tab = self.all_data.set_index('f2')
-            self.Tor_tab = self.all_data.set_index('f3')
-            self.Pre_tab = self.all_data.set_index('f4')
+        #Read the csv and append in vectors
+        with open(file_path, 'r') as csv_file:
+            read = csv.reader(csv_file)
+            next(read)
 
-            self.f1 = self.pot_tab.index.values
-            self.f2 = self.temp_tab.index.values
-            self.f3 = self.Tor_tab.index.values
-            self.f4 = self.Pre_tab.index.values
+            for row in read:
+                self.potency.append(float(row[0]))
+                self.pot_.append(float(row[0]))
+                self.temperature.append(float(row[1]))
+                self.temp_.append(float(row[1]))
+                self.torque.append(float(row[2]))
+                self.pressure.append(float(row[3]))
+
+            #if file_path != '':
+            #self.all_data = pd.read_csv(file_path[0])
+            #self.pot_tab = self.all_data.set_index('f1')
+            #self.temp_tab = self.all_data.set_index('f2')
+            #self.Tor_tab = self.all_data.set_index('f3')
+            #self.Pre_tab = self.all_data.set_index('f4')
+            #
+            #self.f1 = self.pot_tab.index.values
+            #self.f2 = self.temp_tab.index.values
+            #self.f3 = self.Tor_tab.index.values
+            #self.f4 = self.Pre_tab.index.values
 
     def plot_graph_Motor(self):
-        self.graph_Tor_Pot.setYRange(self.f5)
-        self.graph_Tor_Pot.setXRange(self.f4)
+        self.graph_Torque_Potency.clear()
+        self.graph_Temperature_Potency.clear()
+        self.graph_Pressure_Temperature.clear()
 
-        self.graph_Tem_Pot.setYRange(self.f5)
-        self.graph_Tem_Pot.setXRange(self.f2)
-
-        self.graph_Pre_Temp.setYRange(self.f4)
-        self.graph_Pre_Temp.setXRange(self.f2)
+        #self.graph_Torque_Potency.setYRange(self.f5)
+        #self.graph_Torque_Potency.setXRange(self.f4)
+        #self.graph_Temperature_Potency.setYRange(self.f5)
+        #self.graph_Temperature_Potency.setXRange(self.f2)
+        #self.graph_Pressure_Temperature.setYRange(self.f4)
+        #self.graph_Pressure_Temperature.setXRange(self.f2)
 
     def retranslateUi(self, Motor_Window):
         _translate = QtCore.QCoreApplication.translate
         Motor_Window.setWindowTitle(_translate("Motor_Window", "Motor_Window"))
         self.Select_button.setText(_translate("Motor_Window", "Select"))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.Tor_Pot), _translate("Motor_Window", "Torque/Potência"))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.Tem_Pot),
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.Torque_Potency), _translate("Motor_Window", "Torque/Potência"))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.Temperature_Potency),
                                   _translate("Motor_Window", "Temperatura/Potência"))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.Pre_Temp),
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.Pressure_Temperature),
                                   _translate("Motor_Window", "Pressão/Temperatura"))
 
 
