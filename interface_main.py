@@ -93,10 +93,10 @@ class Ui_MainWindow(object):
 class Ui_Brake_Window(object):
 
     def setupUi(self, Brake_Window):
-
         Brake_Window.setObjectName("Brake_Window")
         Brake_Window.resize(611, 589)
 
+        #Define the icon of the window
         b_icon = QtGui.QIcon("b_icon.png")
         Brake_Window.setWindowIcon(b_icon)
 
@@ -110,12 +110,15 @@ class Ui_Brake_Window(object):
         self.verticalLayout.setContentsMargins(0, 0, 0, 0)
         self.verticalLayout.setObjectName("verticalLayout")
 
-        self.Select_button = QtWidgets.QPushButton(self.layoutWidget, clicked=lambda: self.Open_sheet_Brake())
+        #Select button, to open an select your csv file
+        self.Select_button = QtWidgets.QPushButton(self.layoutWidget)
         self.Select_button.setStyleSheet("border-radius=5px;\n"
                                          "")
         self.Select_button.setObjectName("Select_button")
         self.verticalLayout.addWidget(self.Select_button)
+        self.Select_button.clicked.connect(self.csv_file_reader)
 
+        #Tab style
         self.tabWidget = QtWidgets.QTabWidget(self.layoutWidget)
         self.tabWidget.setTabShape(QtWidgets.QTabWidget.Triangular)
         self.tabWidget.setUsesScrollButtons(True)
@@ -125,29 +128,32 @@ class Ui_Brake_Window(object):
         self.tabWidget.setTabBarAutoHide(False)
         self.tabWidget.setObjectName("tabWidget")
 
-        self.Tem_Pre = QtWidgets.QWidget()
-        self.Tem_Pre.setObjectName("Tem_Pre")
-        self.graph_Tem_Pre = pg.PlotWidget(self.Tem_Pre)
-        self.graph_Tem_Pre.setBackground('w')
-        self.graph_Tem_Pre.showGrid(x=True, y=True)
-        self.graph_Tem_Pre.setGeometry(QtCore.QRect(50, 50, 500, 400))
-        self.tabWidget.addTab(self.Tem_Pre, "")
+        #graphs to Temperature and Pressure
+        self.Temperature_Pressure = QtWidgets.QWidget()
+        self.Temperature_Pressure.setObjectName("Tem_Pre")
+        self.graph_Temperature_Pressure = pg.PlotWidget(self.Temperature_Pressure)
+        self.graph_Temperature_Pressure.setBackground('w')
+        self.graph_Temperature_Pressure.showGrid(x=True, y=True)
+        self.graph_Temperature_Pressure.setGeometry(QtCore.QRect(50, 50, 500, 400))
+        self.tabWidget.addTab(self.Temperature_Pressure, "")
 
-        self.Tem_Vel = QtWidgets.QWidget()
-        self.Tem_Vel.setObjectName("Tem_Vel")
-        self.graph_Tem_Vel = pg.PlotWidget(self.Tem_Vel)
-        self.graph_Tem_Vel.setBackground('w')
-        self.graph_Tem_Vel.showGrid(x=True, y=True)
-        self.graph_Tem_Vel.setGeometry(QtCore.QRect(50, 50, 500, 400))
-        self.tabWidget.addTab(self.Tem_Vel, "")
+        #graphs to Temperature and speed
+        self.Temperature_Speed = QtWidgets.QWidget()
+        self.Temperature_Speed.setObjectName("Tem_Vel")
+        self.graph_Temperature_Speed = pg.PlotWidget(self.Temperature_Speed)
+        self.graph_Temperature_Speed.setBackground('w')
+        self.graph_Temperature_Speed.showGrid(x=True, y=True)
+        self.graph_Temperature_Speed.setGeometry(QtCore.QRect(50, 50, 500, 400))
+        self.tabWidget.addTab(self.Temperature_Speed, "")
 
-        self.Pre_Vel = QtWidgets.QWidget()
-        self.Pre_Vel.setObjectName("Pre_Vel")
-        self.graph_Pre_Vel = pg.PlotWidget(self.Pre_Vel)
-        self.graph_Pre_Vel.setBackground('w')
-        self.graph_Pre_Vel.showGrid(x=True, y=True)
-        self.graph_Pre_Vel.setGeometry(QtCore.QRect(50, 50, 500, 400))
-        self.tabWidget.addTab(self.Pre_Vel, "")
+        #graphs to Pressure and speed
+        self.Pressure_Speed = QtWidgets.QWidget()
+        self.Pressure_Speed.setObjectName("Pre_Vel")
+        self.graph_Pressure_Speed = pg.PlotWidget(self.Pressure_Speed)
+        self.graph_Pressure_Speed.setBackground('w')
+        self.graph_Pressure_Speed.showGrid(x=True, y=True)
+        self.graph_Pressure_Speed.setGeometry(QtCore.QRect(50, 50, 500, 400))
+        self.tabWidget.addTab(self.Pressure_Speed, "")
 
         self.verticalLayout.addWidget(self.tabWidget)
         self.tabWidget.raise_()
@@ -163,41 +169,20 @@ class Ui_Brake_Window(object):
         self.tabWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(Brake_Window)
 
-    def Open_sheet_Brake(self):
+    def csv_file_reader(self):
         # Open directory to read csv files
-        filename = QFileDialog.getOpenFileName(None, ("Open FIle"), "", ("Csv Files (*.csv);;Txt FIles (*.txt)"))[0]
-
-        if filename != '':
-            self.alldata = pd.read_csv(filename[0])
-            self.rot_tab = self.alldata.set_index('f1')
-            self.vel_tab = self.alldata.set_index('f2')
-            self.pre_tab = self.alldata.set_index('f4')
-            self.temp_tab = self.alldata.set_index('f5')
-
-            self.f1 = self.rot_tab.index.values
-            self.f2 = self.vel_tab.index.values
-            self.f4 = self.pre_tab.index.values
-            self.f5 = self.temp_tab.index.values
-
-    def plot_graph_brake(self):
-        self.graph_Tem_Pre.setYRange(self.f5)
-        self.graph_Tem_Pre.setXRange(self.f4)
-
-        self.graph_Tem_Vel.setYRange(self.f5)
-        self.graph_Tem_Vel.setXRange(self.f2)
-
-        self.graph_Pre_Vel.setYRange(self.f4)
-        self.graph_Pre_Vel.setXRange(self.f2)
+        filename = QFileDialog.getOpenFileName(None, 'CSV FIle', '', 'Csv Files (*.csv)')
+        print(filename)
 
     def retranslateUi(self, Brake_Window):
         _translate = QtCore.QCoreApplication.translate
         Brake_Window.setWindowTitle(_translate("Brake_Window", "Brake_Window"))
         self.Select_button.setText(_translate("Brake_Window", "Select"))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.Tem_Pre),
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.Temperature_Pressure),
                                   _translate("Brake_Window", "Temperatura/Pressão"))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.Tem_Vel),
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.Temperature_Speed),
                                   _translate("Brake_Window", "Temperatura/Velocidade"))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.Pre_Vel),
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.Pressure_Speed),
                                   _translate("Brake_Window", "Pressão/Velocidade"))
 
 
@@ -222,12 +207,14 @@ class Ui_Motor_Window(object):
         self.verticalLayout.setObjectName("verticalLayout")
 
         #Select button, to open an select your csv file
-        self.Select_button = QtWidgets.QPushButton(self.layoutWidget, clicked=lambda: self.Open_sheet_Motor())
+        self.Select_button = QtWidgets.QPushButton(self.layoutWidget)
         self.Select_button.setStyleSheet("border-radius=5px;\n"
                                          "")
         self.Select_button.setObjectName("Select_button")
         self.verticalLayout.addWidget(self.Select_button)
+        self.Select_button.clicked.connect(self.csv_file_reader)
 
+        #Tab style
         self.tabWidget = QtWidgets.QTabWidget(self.layoutWidget)
         self.tabWidget.setTabShape(QtWidgets.QTabWidget.Triangular)
         self.tabWidget.setUsesScrollButtons(True)
@@ -238,13 +225,6 @@ class Ui_Motor_Window(object):
         self.tabWidget.setObjectName("tabWidget")
 
         #graphs to torque and potency
-        self.torque = []
-        self.potency = []
-        self.pot_ = []
-        self.pressure = []
-        self.temperature = []
-        self.temp_ = []
-
         self.Torque_Potency = QtWidgets.QWidget()
         self.Torque_Potency.setObjectName("Tor_Pot")
 
@@ -254,7 +234,7 @@ class Ui_Motor_Window(object):
         self.graph_Torque_Potency.setGeometry(QtCore.QRect(50, 50, 500, 400))
         self.graph_Torque_Potency.setLabel('left', 'Torque')
         self.graph_Torque_Potency.setLabel('bottom', 'Potência')
-        self.tabWidget.addTab(self.Torque_Potency, "")
+        self.tabWidget.addTab(self.Torque_Potency, "")  
 
         #graphs to temperature and potency
         self.Temperature_Potency = QtWidgets.QWidget()
@@ -280,8 +260,6 @@ class Ui_Motor_Window(object):
         self.graph_Pressure_Temperature.setLabel('bottom', 'Temperatura')
         self.tabWidget.addTab(self.Pressure_Temperature, "")
 
-        self.plot_graph_Motor()
-
         self.verticalLayout.addWidget(self.tabWidget)
         self.tabWidget.raise_()
         self.Select_button.raise_()
@@ -296,46 +274,9 @@ class Ui_Motor_Window(object):
         self.tabWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(Motor_Window)
 
-    def Open_sheet_Motor(self):
-        # Open directory to read csv files
-        file_path, _ = QFileDialog.getOpenFileName(None, 'Open FIle', '', 'Csv Files (*.csv)')
-
-        #Read the csv and append in vectors
-        with open(file_path, 'r') as csv_file:
-            read = csv.reader(csv_file)
-            next(read)
-
-            for row in read:
-                self.potency.append(float(row[0]))
-                self.pot_.append(float(row[0]))
-                self.temperature.append(float(row[1]))
-                self.temp_.append(float(row[1]))
-                self.torque.append(float(row[2]))
-                self.pressure.append(float(row[3]))
-
-            #if file_path != '':
-            #self.all_data = pd.read_csv(file_path[0])
-            #self.pot_tab = self.all_data.set_index('f1')
-            #self.temp_tab = self.all_data.set_index('f2')
-            #self.Tor_tab = self.all_data.set_index('f3')
-            #self.Pre_tab = self.all_data.set_index('f4')
-            #
-            #self.f1 = self.pot_tab.index.values
-            #self.f2 = self.temp_tab.index.values
-            #self.f3 = self.Tor_tab.index.values
-            #self.f4 = self.Pre_tab.index.values
-
-    def plot_graph_Motor(self):
-        self.graph_Torque_Potency.clear()
-        self.graph_Temperature_Potency.clear()
-        self.graph_Pressure_Temperature.clear()
-
-        #self.graph_Torque_Potency.setYRange(self.f5)
-        #self.graph_Torque_Potency.setXRange(self.f4)
-        #self.graph_Temperature_Potency.setYRange(self.f5)
-        #self.graph_Temperature_Potency.setXRange(self.f2)
-        #self.graph_Pressure_Temperature.setYRange(self.f4)
-        #self.graph_Pressure_Temperature.setXRange(self.f2)
+    def csv_file_reader(self):
+        file_path = QFileDialog.getOpenFileName(None, 'CSV File', '', '*.csv')
+        print(file_path)
 
     def retranslateUi(self, Motor_Window):
         _translate = QtCore.QCoreApplication.translate
