@@ -4,6 +4,9 @@ import pandas as pd
 import pyqtgraph as pg
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QFileDialog
+from tkinter import messagebox as msb
+from tkinter import *
+from scipy import signal
 
 
 class Ui_MainWindow(object):
@@ -177,33 +180,76 @@ class Ui_Brake_Window(object):
 
     def csv_file_reader(self):
         # Open directory to read csv files
-        filename = QFileDialog.getOpenFileName(None, 'CSV FIle', '', 'Csv Files (*.csv)')
+        self.filename = QFileDialog.getOpenFileName(None, 'CSV FIle', '', 'Csv Files (*.csv)')
 
-        if filename!='':
-            self.reader = pd.read_csv(filename)
-            RPM = self.reader[0]
-            Speed = self.reader[1]
-            Pressure = self.reader[3]
-            Temperature = self.reader[4]
-            self.plot(RPM,Speed,Pressure,Temperature)
+        if ".csv" in self.filename:
+            self.plot()
         else:
-            print("Incorrect file, choose another one")
+            msb.showerror("ERRO","Arquivo Inválido ")
 
-    def plot(self,rpm,spe,pre,temp):
-        self.graph_pen = pg.mkPen((255,0,0), width=2)
+    def plot(self):
+        if self.filename.get() and ":/" in self.filename.get():
+            df = pd.read_csv(self.filename.get())
+            #f1=RPM, f2=Speed, f3=Timeold, f4=Pressure, f5=Temperature
+            tabela1 = df.set_index('f1')
+            tabela2 = df.set_index('f2')
+            tabela3 = df.set_index('f4')
+            tabela4 = df.set_index('f5')
 
-        self.graph_Temperature_Pressure.setXRange(0,500)
-        self.graph_Temperature_Pressure.setYRange(0,200)
-        self.graph_1 = self.graph_Temperature_Pressure.plot(pre,temp,pen=self.graph_pen)
-
-        self.graph_Temperature_Speed.setXRange(0,60)
-        self.graph_Temperature_Speed.setYRange(0,200)
-        self.graph_2 = self.graph_Temperature_Speed.plot(spe,temp,pen=self.graph_pen)
-
-        self.graph_Pressure_Speed.setXRange(0,60)
-        self.graph_Pressure_Speed.setYRange(0,500)
-        self.graph_3 = self.graph_Pressure_Speed.plot(pre,temp,pen=self.graph_pen)
+            f1 = tabela1.index.values
+            f2 = tabela2.index.values
+            f3 = tabela3.index.values
+            f4 = tabela4.index.values
             
+            rpm_in = []
+            vel_in = []
+            pres_in = []
+            temp_in = []    
+        
+            rpm_in.append(f1)
+            vel_in.append(f2)
+            pres_in.append(f3)
+            temp_in.append(f4)
+
+            b, a = signal.butter(4, 0.12, analog=False)
+
+            sig_rpm = signal.filtfilt(b, a, rpm_in)
+            sig_vel = signal.filtfilt(b, a, vel_in)
+            sig_pres = signal.filtfilt(b, a, pres_in)
+            sig_temp = signal.filtfilt(b, a, temp_in)
+
+            #depois dos dados filtrados
+            data = {
+                'RPM': sig_rpm,
+                'Velocidade': sig_vel,
+                'Pressão': sig_pres,
+                'Temperatura': sig_temp
+            } 
+
+            csv = pd.DataFrame(data,columns=['RPM', 'Velocidade', 'Pressão', 'Temperatura'])
+            csv.to_csv('backup_data.csv')
+
+            self.update_plots(sig_rpm, sig_vel, sig_pres, sig_temp)
+
+    def update_plots(self, RPM, VEL, PRES, TEMP):
+        self.pen1 = pg.mkPen(color=(0,0,0), width=2)
+        self.pen2 = pg.mkPen(color=(255,0,0), width=2)
+        self.pen3 = pg.mkPen(color=(0,0,255), width=2)
+
+        self.graph_Temperature_Pressure.setXRange(-10,500)
+        self.graph_Temperature_Pressure.setYRange(-50,3000)
+        self.graph1_line = self.graph_Temperature_Pressure.plot(TEMP, PRES, pen=self.pen1)
+
+        self.graph_Temperature_Speed.setXRange(-10,500)
+        self.graph_Temperature_Speed.setYRange(0,100)
+        self.graph2_line = self.graph_Temperature_Speed.plot(TEMP, VEL, pen=self.pen2)
+
+        self.graph_Pressure_Speed.setXRange(-50,3000)
+        self.graph_Pressure_Speed.setYRange(0,100)
+        self.graph3_line = self.graph_Pressure_Speed.plot(PRES, VEL, pen=self.pen3)
+
+        #print(RPM)
+
     def retranslateUi(self, Brake_Window):
         _translate = QtCore.QCoreApplication.translate
         Brake_Window.setWindowTitle(_translate("Brake_Window", "Brake_Window"))
