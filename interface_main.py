@@ -121,6 +121,7 @@ class Ui_Brake_Window(object):
         self.Select_button.setObjectName("Select_button")
         self.verticalLayout.addWidget(self.Select_button)
         self.Select_button.clicked.connect(self.csv_file_reader)
+        #self.Select_button.clicked.connect(self.test)
 
         #Tab style
         self.tabWidget = QtWidgets.QTabWidget(self.layoutWidget)
@@ -130,13 +131,13 @@ class Ui_Brake_Window(object):
         self.tabWidget.setTabsClosable(False)
         self.tabWidget.setMovable(True)
         self.tabWidget.setTabBarAutoHide(False)
-        self.tabWidget.setObjectName("tabWidget")
+        self.tabWidget.setObjectName("tabWidget")   
 
         #graphs to Temperature and Pressure
         self.Temperature_Pressure = QtWidgets.QWidget()
         self.Temperature_Pressure.setObjectName("Tem_Pre")
         self.graph_Temperature_Pressure = pg.PlotWidget(self.Temperature_Pressure)
-        self.graph_Temperature_Pressure.setBackground('w')
+        self.graph_Temperature_Pressure.setBackground('k')
         self.graph_Temperature_Pressure.showGrid(x=True, y=True)
         self.graph_Temperature_Pressure.setLabel('left', "Temperatura")
         self.graph_Temperature_Pressure.setLabel('bottom', "Pressão")
@@ -147,7 +148,7 @@ class Ui_Brake_Window(object):
         self.Temperature_Speed = QtWidgets.QWidget()
         self.Temperature_Speed.setObjectName("Tem_Vel")
         self.graph_Temperature_Speed = pg.PlotWidget(self.Temperature_Speed)
-        self.graph_Temperature_Speed.setBackground('w')
+        self.graph_Temperature_Speed.setBackground('k') #w=white and k=black
         self.graph_Temperature_Speed.showGrid(x=True, y=True)
         self.graph_Temperature_Speed.setLabel('left', "Temperatura")
         self.graph_Temperature_Speed.setLabel('bottom', "Velocidade")
@@ -158,7 +159,7 @@ class Ui_Brake_Window(object):
         self.Pressure_Speed = QtWidgets.QWidget()
         self.Pressure_Speed.setObjectName("Pre_Vel")
         self.graph_Pressure_Speed = pg.PlotWidget(self.Pressure_Speed)
-        self.graph_Pressure_Speed.setBackground('w')
+        self.graph_Pressure_Speed.setBackground('k')
         self.graph_Pressure_Speed.showGrid(x=True, y=True)
         self.graph_Pressure_Speed.setLabel('left', "Pressão")
         self.graph_Pressure_Speed.setLabel('bottom', "Velocidade")
@@ -179,6 +180,13 @@ class Ui_Brake_Window(object):
         self.tabWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(Brake_Window)
 
+#    def test(self):
+#        hour = [1,2,3,4,5,6,7,8,9,10]
+#        temperature = [30,32,34,32,33,31,29,32,35,45]
+#        self.pen_test = pg.mkPen(color=(0,255,0), width=4)
+#
+#        self.graph_line_test = self.graph_Temperature_Pressure.plot(hour,temperature, pen=self.pen_test)
+
     def csv_file_reader(self):
         # Open directory to read csv files
         #self.filename = QFileDialog.getOpenFileName(None, 'CSV FIle', '', 'Csv Files (*.csv)')
@@ -186,12 +194,12 @@ class Ui_Brake_Window(object):
         if ".csv" in self.filename:
             self.plot()
         else:
-            msb.showerror("ERRO","Arquivo Inválido ")
+            msb.showerror("ERRO","Arquivo Inválido!")
 
     def plot(self):
         if self.filename.get() and ":/" in self.filename.get():
             df = pd.read_csv(self.filename.get())
-            #f1=RPM, f2=Speed, f3=Timeold, f4=Pressure, f5=Temperature
+            #f1=RPM, f2=Speed, f3=Timeold, f4=Pressure, f5=Temperature for "Brake_data.csv"
             tabela1 = df.set_index('f1')
             tabela2 = df.set_index('f2')
             tabela3 = df.set_index('f4')
@@ -212,7 +220,7 @@ class Ui_Brake_Window(object):
             pres_in.append(f3)
             temp_in.append(f4)
 
-            b, a = signal.butter(4, 0.12, analog=False)
+            b, a = signal.butter(4, 0.15, analog=False)
 
             sig_rpm = signal.filtfilt(b, a, rpm_in)
             sig_vel = signal.filtfilt(b, a, vel_in)
@@ -237,9 +245,9 @@ class Ui_Brake_Window(object):
 
 
     def update_plots(self, RPM, VEL, PRES, TEMP):
-        self.pen1 = pg.mkPen(color=(0,0,0), width=2)
-        self.pen2 = pg.mkPen(color=(255,0,0), width=2)
-        self.pen3 = pg.mkPen(color=(0,0,255), width=2)
+        self.pen1 = pg.mkPen(color=(0,255,0), width=4)
+        self.pen2 = pg.mkPen(color=(255,0,0), width=4)
+        self.pen3 = pg.mkPen(color=(0,0,255), width=4)
 
         self.graph_Temperature_Pressure.setXRange(-10,500)
         self.graph_Temperature_Pressure.setYRange(-50,3000)
@@ -253,7 +261,7 @@ class Ui_Brake_Window(object):
         self.graph_Pressure_Speed.setYRange(0,100)
         self.graph3_line = self.graph_Pressure_Speed.plot(PRES, VEL, pen=self.pen3)
 
-        #print(RPM)
+        print(RPM) #comment this line if you don't want see the RPM in your terminal
 
     def retranslateUi(self, Brake_Window):
         _translate = QtCore.QCoreApplication.translate
