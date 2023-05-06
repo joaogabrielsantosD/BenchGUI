@@ -5,6 +5,7 @@ import pyqtgraph as pg
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QFileDialog
 from tkinter import messagebox as msb
+from tkinter import filedialog as fd
 from tkinter import *
 from scipy import signal
 
@@ -180,8 +181,8 @@ class Ui_Brake_Window(object):
 
     def csv_file_reader(self):
         # Open directory to read csv files
-        self.filename = QFileDialog.getOpenFileName(None, 'CSV FIle', '', 'Csv Files (*.csv)')
-
+        #self.filename = QFileDialog.getOpenFileName(None, 'CSV FIle', '', 'Csv Files (*.csv)')
+        self.filename = fd.askopenfilename()
         if ".csv" in self.filename:
             self.plot()
         else:
@@ -230,6 +231,10 @@ class Ui_Brake_Window(object):
             csv.to_csv('backup_data.csv')
 
             self.update_plots(sig_rpm, sig_vel, sig_pres, sig_temp)
+
+        else:
+            msb.showerror("ERRO", "Não foi possivel fazer o gráfico")
+
 
     def update_plots(self, RPM, VEL, PRES, TEMP):
         self.pen1 = pg.mkPen(color=(0,0,0), width=2)
