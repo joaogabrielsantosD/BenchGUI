@@ -202,23 +202,27 @@ class Ui_Brake_Window(object):
             #f1=RPM, f2=Speed, f3=Timeold, f4=Pressure, f5=Temperature for "Brake_data.csv"
             tabela1 = df.set_index('f1')
             tabela2 = df.set_index('f2')
-            tabela3 = df.set_index('f4')
-            tabela4 = df.set_index('f5')
+            tabela3 = df.set_index('f3')
+            tabela4 = df.set_index('f4')
+            tabela5 = df.set_index('f5')
 
             f1 = tabela1.index.values
             f2 = tabela2.index.values
             f3 = tabela3.index.values
             f4 = tabela4.index.values
+            f5 = tabela5.index.values
             
             rpm_in = []
             vel_in = []
             pres_in = []
             temp_in = []    
+            time = []
         
             rpm_in.append(f1)
             vel_in.append(f2)
-            pres_in.append(f3)
-            temp_in.append(f4)
+            time.append(f3)
+            pres_in.append(f4)
+            temp_in.append(f5)
 
             b, a = signal.butter(4, 0.15, analog=False)
 
@@ -232,19 +236,20 @@ class Ui_Brake_Window(object):
                 'RPM': sig_rpm,
                 'Velocidade': sig_vel,
                 'Pressão': sig_pres,
-                'Temperatura': sig_temp
+                'Temperatura': sig_temp,
+                'Tempo' : time
             } 
 
-            csv = pd.DataFrame(data,columns=['RPM', 'Velocidade', 'Pressão', 'Temperatura'])
+            csv = pd.DataFrame(data,columns=['RPM', 'Velocidade', 'Pressão', 'Temperatura', 'Time'])
             csv.to_csv('backup_data.csv')
 
-            self.update_plots(sig_rpm, sig_vel, sig_pres, sig_temp)
+            self.update_plots(sig_vel, sig_pres, sig_temp)
 
         else:
             msb.showerror("ERRO", "Não foi possivel fazer o gráfico")
 
 
-    def update_plots(self, RPM, VEL, PRES, TEMP):
+    def update_plots(self,VEL, PRES, TEMP):
         self.pen1 = pg.mkPen(color=(0,255,0), width=4)
         self.pen2 = pg.mkPen(color=(255,0,0), width=4)
         self.pen3 = pg.mkPen(color=(0,0,255), width=4)
@@ -260,8 +265,6 @@ class Ui_Brake_Window(object):
         self.graph_Pressure_Speed.setXRange(-50,3000)
         self.graph_Pressure_Speed.setYRange(0,100)
         self.graph3_line = self.graph_Pressure_Speed.plot(PRES, VEL, pen=self.pen3)
-
-        print(RPM) #comment this line if you don't want see the RPM in your terminal
 
     def retranslateUi(self, Brake_Window):
         _translate = QtCore.QCoreApplication.translate
