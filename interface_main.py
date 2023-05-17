@@ -240,7 +240,7 @@ class Ui_Brake_Window(object):
                 'Tempo' : time
             } 
 
-            csv = pd.DataFrame(data,columns=['RPM', 'Velocidade', 'Pressão', 'Temperatura', 'Time'])
+            csv = pd.DataFrame(data,columns=['RPM', 'Velocidade', 'Pressão', 'Temperatura', 'Tempo'])
             csv.to_csv('backup_data.csv')
 
             self.update_plots(sig_vel, sig_pres, sig_temp)
