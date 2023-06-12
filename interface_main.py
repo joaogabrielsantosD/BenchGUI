@@ -247,7 +247,7 @@ class Ui_Brake_Window(object):
 
         csv = pd.DataFrame(data,columns=['RPM', 'Velocidade', 'Pressão', 'Temperatura', 'Time'])
         csv.to_csv('backup_data.csv')
-
+        
         self.update_plots(vel_in, pres_in, temp_in)
 
     def update_plots(self,VEL, PRES, TEMP):
