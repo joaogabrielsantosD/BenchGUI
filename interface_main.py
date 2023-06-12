@@ -137,6 +137,7 @@ class Ui_Brake_Window(object):
         self.Temperature_Pressure = QtWidgets.QWidget()
         self.Temperature_Pressure.setObjectName("Tem_Pre")
         self.graph_Temperature_Pressure = pg.PlotWidget(self.Temperature_Pressure)
+        #change the graph color, default is 'k'(black color)
         self.graph_Temperature_Pressure.setBackground('k')
         self.graph_Temperature_Pressure.showGrid(x=True, y=True)
         self.graph_Temperature_Pressure.setLabel('left', "Temperatura")
@@ -192,62 +193,62 @@ class Ui_Brake_Window(object):
         #self.filename = QFileDialog.getOpenFileName(None, 'CSV FIle', '', 'Csv Files (*.csv)')
         self.filename = fd.askopenfilename()
         if ".csv" in self.filename:
+            self.graph_Pressure_Speed.clear()
+            self.graph_Temperature_Pressure.clear()
+            self.graph_Temperature_Speed.clear()     
+
             self.plot()
+
         else:
             msb.showerror("ERRO","Arquivo Inválido!")
 
     def plot(self):
-        if self.filename.get() and ":/" in self.filename.get():
-            df = pd.read_csv(self.filename.get())
-            #f1=RPM, f2=Speed, f3=Timeold, f4=Pressure, f5=Temperature for "Brake_data.csv"
-            tabela1 = df.set_index('f1')
-            tabela2 = df.set_index('f2')
-            tabela3 = df.set_index('f3')
-            tabela4 = df.set_index('f4')
-            tabela5 = df.set_index('f5')
+        df = pd.read_csv(self.filename, delimiter=',')
+        #f1=RPM, f2=Speed, f3=Timeold, f4=Pressure, f5=Temperature for "Brake_data.csv"
+        tabela1 = df.set_index('f1')
+        tabela2 = df.set_index('f2')
+        tabela3 = df.set_index('f3')
+        tabela4 = df.set_index('f4')
+        tabela5 = df.set_index('f5')
 
-            f1 = tabela1.index.values
-            f2 = tabela2.index.values
-            f3 = tabela3.index.values
-            f4 = tabela4.index.values
-            f5 = tabela5.index.values
-            
-            rpm_in = []
-            vel_in = []
-            pres_in = []
-            temp_in = []    
-            time = []
+        f1 = tabela1.index.values
+        f2 = tabela2.index.values
+        f3 = tabela3.index.values
+        f4 = tabela4.index.values
+        f5 = tabela5.index.values
         
-            rpm_in.append(f1)
-            vel_in.append(f2)
-            time.append(f3)
-            pres_in.append(f4)
-            temp_in.append(f5)
+        rpm_in = []
+        vel_in = []
+        pres_in = []
+        temp_in = []    
+        time = []
+    
+        for i in range(int(len(f1))):
+            rpm_in.append(f1[i])
+            vel_in.append(f2[i])
+            time.append(f3[i])
+            pres_in.append(f4[i])
+            temp_in.append(f5[i])
+        '''b, a = signal.butter(4, 0.15, analog=False)
 
-            b, a = signal.butter(4, 0.15, analog=False)
+        sig_rpm = signal.filtfilt(b, a, rpm_in)
+        sig_vel = signal.filtfilt(b, a, vel_in)
+        sig_pres = signal.filtfilt(b, a, pres_in)
+        sig_temp = signal.filtfilt(b, a, temp_in)'''
 
-            sig_rpm = signal.filtfilt(b, a, rpm_in)
-            sig_vel = signal.filtfilt(b, a, vel_in)
-            sig_pres = signal.filtfilt(b, a, pres_in)
-            sig_temp = signal.filtfilt(b, a, temp_in)
+        #depois dos dados filtrados
+        data = {
+            'RPM': rpm_in,
+            'Velocidade': vel_in,
+            'Pressão': pres_in,
+            'Temperatura': temp_in,
+            'Tempo' : time
+        } 
 
-            #depois dos dados filtrados
-            data = {
-                'RPM': sig_rpm,
-                'Velocidade': sig_vel,
-                'Pressão': sig_pres,
-                'Temperatura': sig_temp,
-                'Tempo' : time
-            } 
+        csv = pd.DataFrame(data,columns=['RPM', 'Velocidade', 'Pressão', 'Temperatura', 'Time'])
+        csv.to_csv('backup_data.csv')
 
-            csv = pd.DataFrame(data,columns=['RPM', 'Velocidade', 'Pressão', 'Temperatura', 'Time'])
-            csv.to_csv('backup_data.csv')
-
-            self.update_plots(sig_vel, sig_pres, sig_temp)
-
-        else:
-            msb.showerror("ERRO", "Não foi possivel fazer o gráfico")
-
+        self.update_plots(vel_in, pres_in, temp_in)
 
     def update_plots(self,VEL, PRES, TEMP):
         self.pen1 = pg.mkPen(color=(0,255,0), width=4)
