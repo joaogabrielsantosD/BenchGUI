@@ -134,7 +134,7 @@ class Ui_Brake_Window(object):
         self.tabWidget.setObjectName("tabWidget")   
 
         #graphs to Temperature and Pressure
-        self.Temperature_Pressure = QtWidgets.QWidget()
+        self.Temperature_Pressure = QtWidgets.QWidget(Brake_Window)
         self.Temperature_Pressure.setObjectName("Tem_Pre")
         self.graph_Temperature_Pressure = pg.PlotWidget(self.Temperature_Pressure)
         #change the graph color, default is 'k'(black color)
@@ -146,7 +146,7 @@ class Ui_Brake_Window(object):
         self.tabWidget.addTab(self.Temperature_Pressure, "")
 
         #graphs to Temperature and speed
-        self.Temperature_Speed = QtWidgets.QWidget()
+        self.Temperature_Speed = QtWidgets.QWidget(Brake_Window)
         self.Temperature_Speed.setObjectName("Tem_Vel")
         self.graph_Temperature_Speed = pg.PlotWidget(self.Temperature_Speed)
         self.graph_Temperature_Speed.setBackground('k') #w=white and k=black
@@ -157,7 +157,7 @@ class Ui_Brake_Window(object):
         self.tabWidget.addTab(self.Temperature_Speed, "")
 
         #graphs to Pressure and speed
-        self.Pressure_Speed = QtWidgets.QWidget()
+        self.Pressure_Speed = QtWidgets.QWidget(Brake_Window)
         self.Pressure_Speed.setObjectName("Pre_Vel")
         self.graph_Pressure_Speed = pg.PlotWidget(self.Pressure_Speed)
         self.graph_Pressure_Speed.setBackground('k')
@@ -190,51 +190,46 @@ class Ui_Brake_Window(object):
 
     def csv_file_reader(self):
         # Open directory to read csv files
-        #self.filename = QFileDialog.getOpenFileName(None, 'CSV FIle', '', 'Csv Files (*.csv)')
-        self.filename = fd.askopenfilename()
-        if ".csv" in self.filename:
-            self.graph_Pressure_Speed.clear()
-            self.graph_Temperature_Pressure.clear()
-            self.graph_Temperature_Speed.clear()     
-
+        filename = QFileDialog.getOpenFileName(None, 'CSV FIle', '', 'Csv Files (*.csv)')
+        #self.filename = fd.askopenfilename()
+        if filename[0]!='':
+            self.rpm_in = filename[0]
+            #self.update_plots(vel_in, pres_in, temp_in)
             self.plot()
 
         else:
             msb.showerror("ERRO","Arquivo Inválido!")
 
     def plot(self):
-        df = pd.read_csv(self.filename, delimiter=',')
-        #f1=RPM, f2=Speed, f3=Timeold, f4=Pressure, f5=Temperature for "Brake_data.csv"
-        tabela1 = df.set_index('f1')
-        tabela2 = df.set_index('f2')
-        tabela3 = df.set_index('f3')
-        tabela4 = df.set_index('f4')
-        tabela5 = df.set_index('f5')
 
-        f1 = tabela1.index.values
-        f2 = tabela2.index.values
-        f3 = tabela3.index.values
-        f4 = tabela4.index.values
-        f5 = tabela5.index.values
-        
-        rpm_in = []
-        vel_in = []
-        pres_in = []
-        temp_in = []    
-        time = []
-    
-        for i in range(int(len(f1))):
-            rpm_in.append(f1[i])
-            vel_in.append(f2[i])
-            time.append(f3[i])
-            pres_in.append(f4[i])
-            temp_in.append(f5[i])
+        f0 = self.rpm_in
+
+        rpm = []
+        vel = []
+        t = []
+        pres = []
+        temp = []
+
+        with open(f0, newline='') as csv_file:
+            reader = csv.reader(csv_file,delimiter=';')
+            for row in reader:
+                rpm.append((row[0]))
+                vel.append((row[1]))
+                t.append((row[2]))
+                pres.append((row[3]))
+                temp.append((row[4]))
+
+        #print("ok")
+
+        self.update_plots(vel,pres,temp)
+
+
         '''b, a = signal.butter(4, 0.15, analog=False)
 
         sig_rpm = signal.filtfilt(b, a, rpm_in)
         sig_vel = signal.filtfilt(b, a, vel_in)
         sig_pres = signal.filtfilt(b, a, pres_in)
-        sig_temp = signal.filtfilt(b, a, temp_in)'''
+        sig_temp = signal.filtfilt(b, a, temp_in)
 
         #depois dos dados filtrados
         data = {
@@ -248,23 +243,23 @@ class Ui_Brake_Window(object):
         csv = pd.DataFrame(data,columns=['RPM', 'Velocidade', 'Pressão', 'Temperatura', 'Time'])
         csv.to_csv('backup_data.csv')
         
-        self.update_plots(vel_in, pres_in, temp_in)
+        self.update_plots(vel_in, pres_in, temp_in)'''
 
     def update_plots(self,VEL, PRES, TEMP):
         self.pen1 = pg.mkPen(color=(0,255,0), width=4)
         self.pen2 = pg.mkPen(color=(255,0,0), width=4)
         self.pen3 = pg.mkPen(color=(0,0,255), width=4)
 
-        self.graph_Temperature_Pressure.setXRange(-10,500)
-        self.graph_Temperature_Pressure.setYRange(-50,3000)
+        self.graph_Temperature_Pressure.setXRange(-100,1000)
+        self.graph_Temperature_Pressure.setYRange(-100,1000)
         self.graph1_line = self.graph_Temperature_Pressure.plot(TEMP, PRES, pen=self.pen1)
 
-        self.graph_Temperature_Speed.setXRange(-10,500)
-        self.graph_Temperature_Speed.setYRange(0,100)
+        self.graph_Temperature_Speed.setXRange(-100,1000)
+        self.graph_Temperature_Speed.setYRange(-100,1000)
         self.graph2_line = self.graph_Temperature_Speed.plot(TEMP, VEL, pen=self.pen2)
 
-        self.graph_Pressure_Speed.setXRange(-50,3000)
-        self.graph_Pressure_Speed.setYRange(0,100)
+        self.graph_Pressure_Speed.setXRange(-100,1000)
+        self.graph_Pressure_Speed.setYRange(-100,1000)
         self.graph3_line = self.graph_Pressure_Speed.plot(PRES, VEL, pen=self.pen3)
 
     def retranslateUi(self, Brake_Window):
