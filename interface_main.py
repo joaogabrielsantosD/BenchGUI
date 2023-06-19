@@ -319,9 +319,8 @@ class Ui_Motor_Window(object):
         #graphs to torque and potency
         self.Torque_Potency = QtWidgets.QWidget()
         self.Torque_Potency.setObjectName("Tor_Pot")
-
         self.graph_Torque_Potency = pg.PlotWidget(self.Torque_Potency)
-        self.graph_Torque_Potency.setBackground('w')
+        self.graph_Torque_Potency.setBackground('k')
         self.graph_Torque_Potency.showGrid(x=True, y=True)
         self.graph_Torque_Potency.setGeometry(QtCore.QRect(50, 50, 500, 400))
         self.graph_Torque_Potency.setLabel('left', 'Torque')
@@ -331,9 +330,8 @@ class Ui_Motor_Window(object):
         #graphs to temperature and potency
         self.Temperature_Potency = QtWidgets.QWidget()
         self.Temperature_Potency.setObjectName("Tem_Pot")
-
         self.graph_Temperature_Potency = pg.PlotWidget(self.Temperature_Potency)
-        self.graph_Temperature_Potency.setBackground('w')
+        self.graph_Temperature_Potency.setBackground('k')
         self.graph_Temperature_Potency.showGrid(x=True, y=True)
         self.graph_Temperature_Potency.setGeometry(QtCore.QRect(50, 50, 500, 400))
         self.graph_Temperature_Potency.setLabel('left', 'Temperatura')
@@ -343,9 +341,8 @@ class Ui_Motor_Window(object):
         #graphs to pressure and temperature
         self.Pressure_Temperature = QtWidgets.QWidget()
         self.Pressure_Temperature.setObjectName("Pre_Temp")
-
         self.graph_Pressure_Temperature = pg.PlotWidget(self.Pressure_Temperature)
-        self.graph_Pressure_Temperature.setBackground('w')
+        self.graph_Pressure_Temperature.setBackground('k')
         self.graph_Pressure_Temperature.showGrid(x=True, y=True)
         self.graph_Pressure_Temperature.setGeometry(QtCore.QRect(50, 50, 500, 400))
         self.graph_Pressure_Temperature.setLabel('left', 'Pressão')
@@ -367,8 +364,50 @@ class Ui_Motor_Window(object):
         QtCore.QMetaObject.connectSlotsByName(Motor_Window)
 
     def csv_file_reader(self):
-        file_path = QFileDialog.getOpenFileName(None, 'CSV File', '', '*.csv')
-        print(file_path)
+        filename = fd.askopenfilename()
+        if ".csv" in filename:
+            df = pd.read_csv(filename)
+            tabela1 = df.set_index('TORQUE')
+            tabela2 = df.set_index('POTENCY')
+            tabela3 = df.set_index('TIME')
+            tabela4 = df.set_index('PRESSURE')
+            tabela5 = df.set_index('TEMPERATURE')
+
+            f1 = tabela1.index.values
+            f2 = tabela2.index.values
+            f3 = tabela3.index.values
+            f4 = tabela4.index.values
+            f5 = tabela5.index.values
+
+            tor_in = []
+            pot_in = []
+            self.t = []
+            pre_in = []
+            tem_in = []
+
+            for i in range(int(len(f1))):
+                tor_in.append(f1[i])
+                pot_in.append(f2[i])
+                self.t.append(f3[i])
+                pre_in.append(f4[i])
+                tem_in.append(f5[i])
+
+            self.update_plots(tor_in,pot_in,pre_in,tem_in)
+        else:
+            msb.showerror("ERRO","Arquivo Inválido!")
+
+    def update_plots(self,TORQUE,POTENCY,PRES,TEMP):
+        self.graph_Torque_Potency.setXRange(0,1000)
+        self.graph_Torque_Potency.setYRange(0,1000)
+        self.graph_Torque_Potency.plot(POTENCY,TORQUE,pen='w')
+
+        self.graph_Temperature_Potency.setXRange(0,1000)
+        self.graph_Temperature_Potency.setYRange(0,1000)
+        self.graph_Temperature_Potency.plot(POTENCY,TEMP,pen='w')
+
+        self.graph_Pressure_Temperature.setXRange(0,1000)    
+        self.graph_Pressure_Temperature.setYRange(0,1000)
+        self.graph_Pressure_Temperature.plot(TEMP,PRES,pen='w')
 
     def retranslateUi(self, Motor_Window):
         _translate = QtCore.QCoreApplication.translate
