@@ -1,5 +1,6 @@
-#Test Phase
+# Version with filtering function
 
+# Can be used for any post-processing.
 import sys
 import pandas as pd
 import pyqtgraph as pg
@@ -45,6 +46,9 @@ class Ui_MainWindow(object):
         self.Text.setFont(font)
         self.Text.setObjectName("Text")
 
+        '''+ 
+            Aqui você pode criar um objeto botão 
+        '''
         #Brake button, open the brake window
         self.Freio_button = QtWidgets.QPushButton(self.centralwidget)
         self.Freio_button.setEnabled(True)
@@ -88,6 +92,9 @@ class Ui_MainWindow(object):
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
+        '''+ 
+            Aqui você nomeia os objetos criados anteriormente 
+        '''
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
         self.Text.setText(_translate("MainWindow", "Escolha a Bancada"))
@@ -133,6 +140,10 @@ class Ui_Brake_Window(object):
         self.tabWidget.setTabBarAutoHide(False)
         self.tabWidget.setObjectName("tabWidget")   
 
+        '''+ 
+            Aqui como criar Widget separados para colocar seus gráficos
+            Dentro da tabWidget**
+        '''
         #graphs to Temperature and Pressure
         self.Temperature_Pressure = QtWidgets.QWidget(Brake_Window)
         self.Temperature_Pressure.setObjectName("Tem_Pre")
@@ -199,6 +210,12 @@ class Ui_Brake_Window(object):
     def csv_file_reader(self):
         # Open directory to read csv files
         #filename = QFileDialog.getOpenFileName(None, 'CSV FIle', '', 'Csv Files (*.csv)')
+        '''+ 
+            Aqui em diante você mudara e criara seus objetos de acordo com o que você deseja ler.
+            set_index tem que ter como referencia um "titulo" para a coluna.
+            Entao no seu csv deve ter um "titulo" para que tudo naquela coluna possa ser lido e 
+            guardado na variavel em que voce criar.s
+        '''
         filename = fd.askopenfilename()
         if ".csv" in filename:
             df = pd.read_csv(filename)
