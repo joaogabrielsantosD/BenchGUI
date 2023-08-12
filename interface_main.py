@@ -34,7 +34,7 @@ class Ui_MainWindow(object):
         MainWindow.setStyleSheet("")
 
         #Define the icon of the window
-        icon = QtGui.QIcon("icon.jpg")
+        icon = QtGui.QIcon("other_things\icon.jpg")
         MainWindow.setWindowIcon(icon)
 
         self.centralwidget = QtWidgets.QWidget(MainWindow)
@@ -80,7 +80,7 @@ class Ui_MainWindow(object):
         self.photo = QtWidgets.QLabel(self.centralwidget)
         self.photo.setGeometry(QtCore.QRect(270, 100, 58, 51))
         self.photo.setText("")
-        self.photo.setPixmap(QtGui.QPixmap("logo.png"))
+        self.photo.setPixmap(QtGui.QPixmap("other_things\logo.png"))
         self.photo.setObjectName("photo")
 
         MainWindow.setCentralWidget(self.centralwidget)
@@ -109,7 +109,7 @@ class Ui_Brake_Window(object):
         Brake_Window.resize(611, 589)
 
         #Define the icon of the window
-        b_icon = QtGui.QIcon("b_icon.png")
+        b_icon = QtGui.QIcon("other_things\_brake_icon.png")
         Brake_Window.setWindowIcon(b_icon)
 
         self.centralwidget = QtWidgets.QWidget(Brake_Window)
@@ -302,7 +302,7 @@ class Ui_Motor_Window(object):
         Motor_Window.resize(611, 589)
 
         #Define the icon of the window
-        m_icon = QtGui.QIcon("m_icon.png")
+        m_icon = QtGui.QIcon("other_things\m_icon.png")
         Motor_Window.setWindowIcon(m_icon)
 
         self.centralwidget = QtWidgets.QWidget(Motor_Window)
