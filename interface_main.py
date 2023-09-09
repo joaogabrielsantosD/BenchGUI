@@ -251,10 +251,10 @@ class Ui_Brake_Window(object):
 
     def update_plots(self,RPM,VEL, PRES, TEMP):
         b,a = signal.butter(4,0.1,analog=False)
-        sig_temp = signal.lfilter(b,a,TEMP)
-        sig_pres = signal.lfilter(b,a,PRES)
-        sig_vel = signal.lfilter(b,a,VEL)
-        sig_rot = signal.lfilter(b, a, RPM)
+        sig_temp = signal.filtfilt(b,a,TEMP)
+        sig_pres = signal.filtfilt(b,a,PRES)
+        sig_vel = signal.filtfilt(b,a,VEL)
+        sig_rot = signal.filtfilt(b, a, RPM)
 
         self.pen1 = pg.mkPen(color=(0,255,0), width=4)
         self.pen2 = pg.mkPen(color=(255,0,0), width=4)
